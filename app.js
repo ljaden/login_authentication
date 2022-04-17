@@ -1,4 +1,5 @@
 // import modules
+require('dotenv').config()
 // express
 const express = require('express')
 // ejs templating
@@ -25,9 +26,7 @@ const loginSchema = mongoose.Schema({
   password:String
 })
 
-// secret password
-const secret = "secretpassword";
-loginSchema.plugin(encrypt, {secret:secret, encryptedFields: ['password']})
+loginSchema.plugin(encrypt, {secret:process.env.SECRET, encryptedFields: ['password']})
 
 // mongoose model
 const User = mongoose.model('User',loginSchema)
