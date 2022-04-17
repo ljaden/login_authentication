@@ -1,2 +1,5 @@
 # Js node_modules
 node_modules/
+
+# dotenv environment
+.env
