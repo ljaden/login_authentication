@@ -5,8 +5,8 @@ const express = require('express')
 const ejs = require('ejs')
 // require database - mongoose
 const mongoose = require('mongoose')
-// require encryption - mongoose
-const encrypt = require('mongoose-encryption')
+// require md5 hasing
+const md5 = require('md5')
 
 const app = express()
 // send static files to express
@@ -25,9 +25,6 @@ const loginSchema = mongoose.Schema({
   password:String
 })
 
-// secret password
-const secret = "secretpassword";
-loginSchema.plugin(encrypt, {secret:secret, encryptedFields: ['password']})
 
 // mongoose model
 const User = mongoose.model('User',loginSchema)
@@ -48,18 +45,25 @@ app.get('/register', (req,res) => {
 })
 // register - save users data to database
 app.post('/register', (req,res) => {
-  User.create({email:req.body.username,password:req.body.password},(e,r)=>{
-    if(!e){
-      console.log(e);
+  User.create(
+    {
+    email:req.body.username,
+    password:md5(req.body.password)},
+  (e,r)=>{
+    if(e){
+      res.send(e);
     }else { //render secrets page after user has succesfully registered
+      console.log(r)
       res.render('secrets')
     }
   })
 })
+
+
 // login - authenticates users account to show secret page
 app.post('/login',(req,res) => {
   const loginEmail = req.body.username
-  const loginPass = req.body.password
+  const loginPass = md5(req.body.password)
 
   // console.log(loginEmail,loginPass)
   
